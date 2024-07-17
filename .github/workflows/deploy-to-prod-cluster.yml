@@ -50,35 +50,6 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
 
-      - name: Check and fix Ingress Nginx installation
-        run: |
-          if ! kubectl get namespace ingress-nginx &>/dev/null; then
-            echo "Ingress Nginx namespace not found. Installing Ingress Nginx..."
-            helm install ingress-nginx ingress-nginx/ingress-nginx \
-              --namespace ingress-nginx \
-              --create-namespace \
-              --set controller.publishService.enabled=true \
-              --set controller.service.externalTrafficPolicy=Local \
-              --set controller.admissionWebhooks.enabled=true \
-              --set controller.admissionWebhooks.patch.enabled=true
-          else
-            echo "Ingress Nginx namespace found. Upgrading controller..."
-            helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-              --namespace ingress-nginx \
-              --set controller.publishService.enabled=true \
-              --set controller.service.externalTrafficPolicy=Local \
-              --set controller.admissionWebhooks.enabled=true \
-              --set controller.admissionWebhooks.patch.enabled=true
-          fi
-          
-          kubectl get pods -n ingress-nginx
-          kubectl get services -n ingress-nginx
-
-      - name: Verify Ingress Nginx admission webhook
-        run: |
-          kubectl get validatingwebhookconfiguration ingress-nginx-admission -o yaml
-          kubectl get service ingress-nginx-controller-admission -n ingress-nginx
-
       - name: Create orchestration namespace
         run: |
           kubectl create namespace orchestration --dry-run=client -o yaml | kubectl apply -f -
@@ -96,6 +67,7 @@ jobs:
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
+            --set ingress.enabled=false \
             --namespace orchestration \
             --create-namespace \
             --debug
@@ -121,6 +93,7 @@ jobs:
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
+            --set ingress.enabled=false \
             --namespace orchestration \
             --create-namespace \
             --debug
