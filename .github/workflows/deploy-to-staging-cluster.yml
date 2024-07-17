@@ -67,7 +67,7 @@ jobs:
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
-            --set ingress.enabled=false \
+            --set ingress.enabled=true \
             --namespace orchestration \
             --create-namespace \
             --debug
@@ -93,7 +93,7 @@ jobs:
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
-            --set ingress.enabled=false \
+            --set ingress.enabled=true \
             --namespace orchestration \
             --create-namespace \
             --debug
