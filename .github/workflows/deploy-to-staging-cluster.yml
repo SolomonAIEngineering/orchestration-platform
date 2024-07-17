@@ -49,7 +49,19 @@ jobs:
       - name: Configure Kubernetes context
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
+      - name: Delete existing ingress-nginx release
+        run: |
+          if helm list -n ingress-nginx | grep -q "ingress-nginx"; then
+            echo "Deleting existing ingress-nginx release..."
+            helm uninstall ingress-nginx -n ingress-nginx
+          else
+            echo "No existing ingress-nginx release found."
+          fi
 
+      - name: Wait for resources to be removed
+        run: |
+          echo "Waiting for ingress-nginx resources to be fully removed..."
+          sleep 30
       - name: Create trigger namespace
         run: |
           kubectl create namespace trigger --dry-run=client -o yaml | kubectl apply -f -
