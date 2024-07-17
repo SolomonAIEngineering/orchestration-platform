@@ -66,10 +66,10 @@ jobs:
         run: |
           kubectl create namespace trigger --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Build Helm dependencies
-        working-directory: ${{env.working-directory}}
-        run: |
-          helm dependency build ./helm-charts
+      # - name: Build Helm dependencies
+      #   working-directory: ${{env.working-directory}}
+      #   run: |
+      #     helm dependency build ./helm-charts
 
       - name: Deploy To Staging Environment
         working-directory: ${{env.working-directory}}
