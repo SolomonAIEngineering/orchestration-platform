@@ -245,11 +245,11 @@ ingress:
   enabled: true
   ## @param ingress.ingressClassName Ingress class name
   ##
-  ingressClassName: nginx
+  ingressClassName: trigger-nginx
   ## @param ingress.nginx.enabled Ingress controller
   ##
   nginx:
-    enabled: false
+    enabled: true
   ## @param ingress.annotations Ingress annotations
   ##
   annotations:
