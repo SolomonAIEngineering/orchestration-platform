@@ -40,7 +40,7 @@ jobs:
         working-directory: ${{env.working-directory}}
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
-          helm upgrade --install accounting-service ./helm-charts \
+          helm upgrade --install trigger ./helm-charts \
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
             -n orchestration
