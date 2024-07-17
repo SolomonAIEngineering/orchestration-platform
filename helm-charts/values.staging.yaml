@@ -26,7 +26,7 @@ trigger:
   deploymentAnnotations: {}
   ## @param trigger.replicaCount trigger replica count
   ##
-  replicaCount: 2
+  replicaCount: 1
   ## trigger image parameters
   ##
   image:
