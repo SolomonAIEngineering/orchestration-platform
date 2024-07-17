@@ -1,0 +1,46 @@
+# releases staging artifacts to the staging environment
+name: orchestration platform prod deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "helm-charts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to write releases
+  id-token: write # needed for keyless signing
+  packages: write # needed for ghcr access
+
+env:
+  KUBERNETES_VERSION: 1.26.0
+  HELM_CHART_PATH: helm-charts
+  K8S_VERSION: "1.28.0"
+  HELM_VERSION: 3.8.1
+  GO_VERSION: 1.21.x
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: .
+      cluster: ${{ secrets.PROD_CLUSTER_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      - name: Deploy To Production Environment
+        working-directory: ${{env.working-directory}}
+        run: |
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
+          helm upgrade --install accounting-service ./helm-charts \
+            --values ./helm-charts/values.production.yaml \
+            --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
+            -n orchestration
