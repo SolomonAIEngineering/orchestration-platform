@@ -78,8 +78,8 @@ jobs:
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
-            --set ingress.nginx.enabled=true \
-            --set ingress.enabled=true \
+            --set ingress.nginx.enabled=false \
+            --set ingress.enabled=false \
             --namespace trigger \
             --create-namespace \
             --debug
@@ -104,8 +104,8 @@ jobs:
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=trigger-nginx  \
-            --set ingress.nginx.enabled=true \
-            --set ingress.enabled=true \
+            --set ingress.nginx.enabled=false \
+            --set ingress.enabled=false \
             --namespace trigger \
             --create-namespace \
             --debug
