@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - staging
-    paths:
-      - "helm-charts/**"
+    # paths:
+    #   - "helm-charts/**"
   workflow_dispatch:
 
 permissions:
