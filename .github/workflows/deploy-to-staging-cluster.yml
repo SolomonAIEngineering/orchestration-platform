@@ -93,7 +93,7 @@ jobs:
         run: |
           helm upgrade --install trigger ./helm-charts \
             --values ./helm-charts/values.staging.yaml \
-            --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
+            --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
             --namespace orchestration \
@@ -118,7 +118,7 @@ jobs:
           
           helm upgrade --install trigger ./helm-charts \
             --values ./helm-charts/values.staging.yaml \
-            --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
+            --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
             --set ingress.nginx.enabled=false \
             --namespace orchestration \
