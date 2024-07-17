@@ -46,6 +46,37 @@ jobs:
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
 
+      - name: Configure Kubernetes context
+        run: |
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
+
+      - name: Check Ingress Nginx installation
+        run: |
+          if ! kubectl get namespace ingress-nginx &>/dev/null; then
+            echo "Ingress Nginx namespace not found. Installing Ingress Nginx..."
+            helm install ingress-nginx ingress-nginx/ingress-nginx \
+              --namespace ingress-nginx \
+              --create-namespace \
+              --set controller.publishService.enabled=true
+          else
+            echo "Ingress Nginx namespace found. Checking for controller..."
+            if ! kubectl get deployment -n ingress-nginx ingress-nginx-controller &>/dev/null; then
+              echo "Ingress Nginx controller not found. Installing..."
+              helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+                --namespace ingress-nginx \
+                --set controller.publishService.enabled=true
+            else
+              echo "Ingress Nginx controller found."
+            fi
+          fi
+          
+          kubectl get pods -n ingress-nginx
+          kubectl get services -n ingress-nginx
+
+      - name: Create orchestration namespace
+        run: |
+          kubectl create namespace orchestration --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Build Helm dependencies
         working-directory: ${{env.working-directory}}
         run: |
@@ -54,8 +85,29 @@ jobs:
       - name: Deploy To Staging Environment
         working-directory: ${{env.working-directory}}
         run: |
-          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
           helm upgrade --install trigger ./helm-charts \
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_PROD_URL }}" \
-            -n orchestration
+            --set ingress.ingressClassName=nginx \
+            --set ingress.nginx.enabled=false \
+            --namespace orchestration \
+            --create-namespace \
+            --debug
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n orchestration
+          kubectl get ingress -n orchestration
+          kubectl get services -n orchestration
+
+      - name: Check Ingress Nginx admission webhook
+        run: |
+          if ! kubectl get validatingwebhookconfiguration ingress-nginx-admission &>/dev/null; then
+            echo "Warning: Ingress Nginx admission webhook not found. This may cause issues with Ingress validation."
+          else
+            echo "Ingress Nginx admission webhook found."
+          fi
+
+      - name: Display Ingress details
+        run: |
+          kubectl get ingress -n orchestration -o yaml
