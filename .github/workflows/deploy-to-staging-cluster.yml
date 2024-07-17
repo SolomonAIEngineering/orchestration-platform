@@ -1,4 +1,4 @@
-name: orchestration platform staging deployment
+name: trigger platform staging deployment
 
 on:
   push:
@@ -50,9 +50,9 @@ jobs:
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.cluster }}
 
-      - name: Create orchestration namespace
+      - name: Create trigger namespace
         run: |
-          kubectl create namespace orchestration --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace trigger --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Build Helm dependencies
         working-directory: ${{env.working-directory}}
@@ -66,21 +66,21 @@ jobs:
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
-            --set ingress.nginx.enabled=false \
-            --set ingress.enabled=false \
-            --namespace orchestration \
+            --set ingress.nginx.enabled=true \
+            --set ingress.enabled=true \
+            --namespace trigger \
             --create-namespace \
             --debug
 
       - name: Verify deployment
         run: |
-          kubectl get pods -n orchestration
-          kubectl get ingress -n orchestration
-          kubectl get services -n orchestration
+          kubectl get pods -n trigger
+          kubectl get ingress -n trigger
+          kubectl get services -n trigger
 
       - name: Display Ingress details
         run: |
-          kubectl get ingress -n orchestration -o yaml
+          kubectl get ingress -n trigger -o yaml
 
       - name: Temporarily disable webhook (if all else fails)
         if: failure()
@@ -92,8 +92,8 @@ jobs:
             --values ./helm-charts/values.staging.yaml \
             --set solomon.database.url="${{ secrets.TRIGGER_DEV_DB_STAGING_URL }}" \
             --set ingress.ingressClassName=nginx \
-            --set ingress.nginx.enabled=false \
-            --set ingress.enabled=false \
-            --namespace orchestration \
+            --set ingress.nginx.enabled=true \
+            --set ingress.enabled=true \
+            --namespace trigger \
             --create-namespace \
             --debug
