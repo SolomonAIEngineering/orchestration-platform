@@ -82,8 +82,8 @@ jobs:
       - name: Verify deployment
         run: |
           kubectl get pods -n trigger
-          kubectl get ingress -n orchestriggertration
-          kubectl get services -n orchestriggertriggertration
+          kubectl get ingress -n trigger
+          kubectl get services -n trigger
 
       - name: Display Ingress details
         run: |
