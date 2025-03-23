@@ -21,6 +21,36 @@ The Trigger.dev SDK is a TypeScript/JavaScript library that allows you to define
 
 Trigger.dev is an open source platform and SDK which allows you to create long-running background jobs. Write normal async code, deploy, and never hit a timeout.
 
+## Package Purpose
+
+This package provides the primary SDK interface for developers to:
+
+- Define tasks that can run without timeouts
+- Set up triggers based on events, schedules, or webhooks
+- Configure retries, concurrency, and other job parameters
+- Connect to integrations and APIs
+- Monitor and track task executions
+- Stream logs and results
+- Control job execution flow
+
+It's designed to be used in your application code to define background tasks that will be executed by the Trigger.dev platform.
+
+## Key Features
+
+- **Task Definition**: Create tasks with unique IDs and run functions
+- **Timeout-Free Execution**: Run code that takes longer than typical serverless timeouts
+- **Retry Handling**: Built-in exponential backoff and configurable retry policies
+- **Scheduled Tasks**: Cron expressions and interval-based scheduling
+- **Event-Driven Triggers**: React to events from integrations or webhooks
+- **Observability**: Track execution progress and status
+- **TypeScript Support**: Full type safety for your task definitions
+
+## Installation
+
+```bash
+npm install @trigger.dev/sdk
+```
+
 ## Getting started
 
 The quickest way to get started is to create an account in our [web app](https://cloud.trigger.dev), create a new project and follow the instructions in the onboarding. Build and deploy your first task in minutes.
