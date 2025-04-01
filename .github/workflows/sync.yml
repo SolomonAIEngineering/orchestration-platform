@@ -58,3 +58,17 @@ jobs:
 
     - name: Show value of 'has_new_commits'
       run: echo ${{ steps.sync.outputs.has_new_commits }}
+
+    # Fallback step to handle sync failures due to conflicts
+    - name: Handle conflicts if sync fails
+      if: failure() && steps.sync.outcome == 'failure'
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git fetch origin
+        git fetch upstream
+        git checkout -b temp-fix-conflicts
+        git merge upstream/main -X theirs
+        git checkout main
+        git merge temp-fix-conflicts
+        git push origin main
