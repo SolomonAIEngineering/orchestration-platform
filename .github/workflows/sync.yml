@@ -39,6 +39,10 @@ jobs:
         target_repo_token: ${{ secrets.GITHUB_TOKEN }}
         upstream_sync_branch: main
         upstream_sync_repo: triggerdotdev/trigger.dev
+        # Allow merge commits by removing --ff-only
+        upstream_pull_args: '--tags'
+        # Use rebase strategy for better conflict handling
+        git_config_pull_rebase: 'true'
 
         # Set test_mode true during manual dispatch to run tests instead of the true action!!
         test_mode: ${{ inputs.sync_test_mode }}
